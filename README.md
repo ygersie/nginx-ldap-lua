@@ -100,7 +100,7 @@ http {
   auth_ldap_cache_expiration_time 300000;
   auth_ldap_cache_size 10000;
 
-  ldap_server cloud_ldap {
+  ldap_server ldap_server1 {
     url ldaps://ldap.example.com/ou=People,dc=example,dc=com?uid?sub?(objectClass=inetOrgPerson);
     group_attribute_is_dn on;
     group_attribute member;
