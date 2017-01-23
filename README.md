@@ -130,6 +130,8 @@ http {
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection $connection_upgrade;
 
+      proxy_read_timeout 31d;
+
       proxy_pass http://$target;
     }
   }
