@@ -1,21 +1,20 @@
-FROM alpine:3.4
+FROM alpine:3.7
 
-ENV NGINX_VERSION release-1.11.3
-ENV LUAJIT_VERSION 2.0.4
-ENV LUA_NGX_MODULE_VERSION 0.10.7
+ENV NGINX_VERSION release-1.13.9
+ENV LUAJIT_VERSION 2.0.5
+ENV LUA_NGX_MODULE_VERSION 0.10.11
+ENV LUA_RESTY_DNS_VERSION 0.20
 ENV NGINX_DEV_KIT_VERSION 0.3.0
 
-RUN apk update \
-  && apk add ca-certificates pcre libldap libgcc \
-  && apk add --virtual build-dependencies \
+RUN apk add --no-cache ca-certificates pcre libldap libgcc libressl \
+  && apk add --no-cache --virtual build-dependencies \
        build-base \
        pcre-dev \
        git \
-       openssl-dev \
        zlib-dev \
        openssh-client \
        openldap-dev \
-       openssl \
+       libressl-dev \
   && cd ~ \
   && wget -O luajit.tar.gz http://luajit.org/download/LuaJIT-${LUAJIT_VERSION}.tar.gz \
   && tar zxvf luajit.tar.gz \
@@ -58,10 +57,10 @@ RUN apk update \
     --pid-path=/var/run/nginx.pid \ 
     --error-log-path=/var/log/nginx/error.log \ 
     --http-log-path=/var/log/nginx/access.log \
-  && make -j2 \
+  && make -j$(getconf _NPROCESSORS_ONLN) \
   && make install \
   && ln -s /usr/local/lib/libluajit-5.1.so /usr/lib/libluajit-5.1.so.2 \
-  && wget -O /usr/local/share/luajit-2.0.4/dns_resolver.lua https://raw.githubusercontent.com/openresty/lua-resty-dns/v0.18/lib/resty/dns/resolver.lua \
+  && wget -O /usr/local/share/luajit-${LUAJIT_VERSION}/dns_resolver.lua https://raw.githubusercontent.com/openresty/lua-resty-dns/v${LUA_RESTY_DNS_VERSION}/lib/resty/dns/resolver.lua \
   && cd ~ \
   && rm -rf ngx_devel_kit-${NGINX_DEV_KIT_VERSION} \
   && rm -rf lua-nginx-module-${LUA_NGX_MODULE_VERSION} \

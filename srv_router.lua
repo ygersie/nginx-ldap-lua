@@ -17,7 +17,7 @@ end
 local nameserver = {ngx.var.ns_ip, ngx.var.ns_port}
 
 local dns, err = resolver:new{
-  nameservers = {nameserver}, retrans = 2, timeout = 250
+  nameservers = {nameserver}, retrans = 3
 }
 
 if not dns then
