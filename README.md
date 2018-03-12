@@ -2,7 +2,7 @@
 
 https://hub.docker.com/r/ygersie/nginx-ldap-lua
 
-We've been running hashi-ui (previously called nomad-ui) quite a lot. As it's currently possible to, besides viewing job statistics,
+We've been running hashi-ui quite a lot. As it's currently possible to, besides viewing job statistics,
 also edit and manage jobs, the need started to arise to put it behind some form of authentication. Here's where it becomes a bit more
 challenging. If you, like we do, run hashi-ui on Nomad itself the service is allocated a dynamic port on a "random" worker. Your average
 proxy server can be configured using something like [consul-template](https://github.com/hashicorp/consul-template) but what if you also
@@ -16,15 +16,11 @@ The docker container is compiled with the ldap and lua module along with LuaJIT 
 
 In the example Nomad job you'll find that a Consul **tag** has been configured starting with `urlprefix-`. This is an identifier tag for
 [Fabio](https://github.com/eBay/fabio) If you haven't heard of Fabio before please check it out. It's an awesome piece of software which
-dynamically creates routes based on Consul services. We use it all over the place to expose external http(s) traffic.
+dynamically creates routes based on Consul services.
 
 **NOTES:**
 * There's no caching mechanism in the Lua script, if you expect high number of requests you might want to setup dnsmasq with caching or
 integrate [lua-lrucache](https://github.com/openresty/lua-resty-lrucache)
-* Nginx doesn't support a way of listening on a dynamic port. The next Nomad release (0.5.3) will likely contain [a fix](https://github.com/hashicorp/nomad/issues/2217)
-to be able to render environment variables in the `template` stanza. At that point we should be able to pass `{{ env "NOMAD_PORT_http" }}`
-into the `listen` block to address this issue. I've chosen to run Nginx on static port 15080 since that is a port outside of the Nomad
-allocation port range.
 
 # Example Nomad job spec
 
@@ -39,7 +35,7 @@ job "hashi-ui" {
         task "hashiui" {
             driver = "docker"
             config {
-                image = "jippi/hashi-ui:v0.13.0"
+                image = "jippi/hashi-ui:v0.24.0"
                 network_mode = "host"
             }
 
@@ -74,7 +70,7 @@ job "hashi-ui" {
         task "nginx" {
             driver = "docker"
             config {
-                image = "ygersie/nginx-ldap-lua:1.11.3"
+                image = "ygersie/nginx-ldap-lua:1.13.9"
                 network_mode = "host"
                 volumes = [
                     "local/config/nginx.conf:/etc/nginx/nginx.conf"
@@ -114,7 +110,7 @@ http {
   }
 
   server {
-    listen 15080;
+    listen {{ env "NOMAD_PORT_http" }};
 
     location / {
       auth_ldap "Login";
@@ -160,9 +156,7 @@ EOF
                 memory = 64
                 network {
                     mbits = 1
-                    port "http" {
-                        static = "15080"
-                    }
+                    port "http" {}
                 }
             }
         }
