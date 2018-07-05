@@ -51,6 +51,7 @@ RUN apk add --no-cache ca-certificates pcre libldap libgcc libressl \
     --http-fastcgi-temp-path=/var/lib/nginx/fastcgi \
     --http-proxy-temp-path=/var/lib/nginx/proxy \
     --with-http_ssl_module \
+    --with-http_realip_module \
     --with-debug \
     --conf-path=/etc/nginx/nginx.conf \ 
     --sbin-path=/usr/sbin/nginx \ 
