@@ -40,6 +40,7 @@ RUN apk add --no-cache ca-certificates pcre libldap libgcc libressl \
   && export LUAJIT_INC=/usr/local/include/luajit-2.0 \
   && git clone https://github.com/kvspb/nginx-auth-ldap.git \
   && git clone https://github.com/nginx/nginx.git \
+  && git clone https://github.com/GUI/nginx-upstream-dynamic-servers.git \
   && cd ~/nginx \
   && git checkout tags/${NGINX_VERSION} \
   && ./auto/configure \
@@ -47,6 +48,7 @@ RUN apk add --no-cache ca-certificates pcre libldap libgcc libressl \
     --add-module=/root/ngx_devel_kit-${NGINX_DEV_KIT_VERSION} \
     --add-module=/root/lua-nginx-module-${LUA_NGX_MODULE_VERSION} \
     --add-module=/root/nginx-auth-ldap \
+    --add-module=/root/nginx-upstream-dynamic-servers \
     --http-client-body-temp-path=/var/lib/nginx/body \
     --http-fastcgi-temp-path=/var/lib/nginx/fastcgi \
     --http-proxy-temp-path=/var/lib/nginx/proxy \
