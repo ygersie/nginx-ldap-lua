@@ -1,9 +1,9 @@
-FROM alpine:3.7
+FROM alpine:3.9.3
 
-ENV NGINX_VERSION release-1.13.9
+ENV NGINX_VERSION release-1.16.0
 ENV LUAJIT_VERSION 2.0.5
-ENV LUA_NGX_MODULE_VERSION 0.10.11
-ENV LUA_RESTY_DNS_VERSION 0.20
+ENV LUA_NGX_MODULE_VERSION 0.10.14
+ENV LUA_RESTY_DNS_VERSION 0.21
 ENV NGINX_DEV_KIT_VERSION 0.3.0
 
 RUN apk add --no-cache ca-certificates pcre libldap libgcc libressl \
@@ -54,6 +54,7 @@ RUN apk add --no-cache ca-certificates pcre libldap libgcc libressl \
     --http-proxy-temp-path=/var/lib/nginx/proxy \
     --with-http_ssl_module \
     --with-http_realip_module \
+    --with-http_auth_request_module \
     --with-debug \
     --conf-path=/etc/nginx/nginx.conf \ 
     --sbin-path=/usr/sbin/nginx \ 
